@@ -116,8 +116,8 @@ $(document).ready(function(){
 	})
 	function countRange(acuan,keberterimaan){
 		if(acuan && keberterimaan){
-			rangePlus = parseFloat(acuan)+parseFloat(keberterimaan);
-			rangeMinus = parseFloat(acuan)-parseFloat(keberterimaan);
+			rangePlus = roundNumber(parseFloat(acuan)+parseFloat(keberterimaan));
+			rangeMinus = roundNumber(parseFloat(acuan)-parseFloat(keberterimaan));
 			rangeDom.html(`<small>Range Negative = <span class="text-red-500">${rangeMinus}</span></small><small> dan Range Positive = <span class="text-red-500">${rangePlus}</span></small> `)
 			rangeDom.data("plus",rangePlus);
 			rangeDom.data("minus",rangeMinus);
@@ -211,6 +211,14 @@ $(document).ready(function(){
     	var val = (Math.round(num * 10)/10).toFixed(1);
 		if(val > 0){
 			return "+"+val;
+		}else{
+			return val;
+		}
+	}
+	function roundNumber(num) {
+    	var val = (Math.round(num * 10)/10).toFixed(1);
+		if(val > 0){
+			return val;
 		}else{
 			return val;
 		}
