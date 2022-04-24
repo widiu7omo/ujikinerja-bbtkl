@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Perhitungan</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script type="text/javascript" src="//cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+	<style>
+		html,body{
+			height: 100%;
+		}
+		#data-table{
+			display: none;
+		}
+	</style>
+</head>
+<body>
+<div class="max-h-full h-full max-w-screen-xl mx-auto my-32 px-3 xl:px-0">
+	<div class="mb-4 flex flex-col md:flex-row justify-between">
+		<div class="flex <md:w-full">
+			<div class="flex flex-col mr-4">
+				<div class="flex items-center">
+					<span class="inline-flex justify-center text-2xl items-center w-8 h-8 p-3 mr-2 font-semibold text-red-500 font-bold bg-red-50 rounded-full">1</span>
+					<p class="text-gray-400 text-xs">Tentukan data acuan</p>
+				</div>
+				<label for="acuan-input" class="text-gray-500 mr-1 mt-2 md:mt-0">Data Acuan
+					<input autocomplete="off" class="px-5 py-2 w-36 bg-gray-100 focus:outline-transparent focus:outline-red-400 text-xl rounded-lg" id="acuan-input" placeholder="Atur disini"/>
+				</label>
+			</div>
+			<div class="flex flex-col">
+				<div class="flex items-center">
+					<span class="inline-flex justify-center text-2xl items-center w-8 h-8 p-3 mr-2 font-semibold text-red-500 font-bold bg-red-50 rounded-full">2</span>
+					<p class="text-gray-400 text-xs">Tentukan data keberterimaan</p>
+				</div>
+				<label for="keberterimaan-input" class="text-gray-500 mr-1 mt-2 md:mt-0">Keberterimaan
+					<input autocomplete="off" class="px-5 py-2 w-36 bg-gray-100 focus:outline-transparent text-xl rounded-lg focus:outline-red-400 " id="keberterimaan-input" placeholder="Atur disini" />
+				</label>
+			</div>
+		</div>
+		<div id="container-range" class="bg-blue-50 rounded-lg p-3 text-blue-400 font-bold mt-4 md:mt-0 hidden">
+			Ditemukan:
+			<div id="range-value"></div>
+		</div>
+	</div>
+	<div>
+		<div class="bg-red-50 flex flex-1 flex-row  rounded-lg px-4 py-4 relative">
+			<input autocomplete="off" id="data-input" class="placeholder:italic placeholder:text-red-200 focus:outline-none focus:drop-shadow-lg focus:outline-red-400 px-8 py-8 text-4xl rounded-lg w-full" placeholder="Contoh 241.7,241.3,241.8,...." />
+			<button id="btn-clear" class="py-4 px-4 text-3xl bg-red-50 hover:bg-red-100 hover:outline-red-300 focus:outline-red-500 text-red-400 font-semibold rounded-lg absolute right-56 top-40 md:top-8 hover:drop-shadow-lg">
+				<svg class="text-3xl" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="2.25rem" width="2.25rem" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0V0z"></path><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>
+			</button>
+			<button id="btn-hitung" class="py-4 px-10 text-3xl bg-red-500 hover:bg-red-400 hover:outline-red-300 focus:outline-red-500 text-white font-semibold rounded-lg absolute right-8 top-40 md:top-8 hover:drop-shadow-lg">Hitung
+				<span class="inline-flex justify-center drop-shadow-none text-2xl items-center w-8 h-8 p-3 mr-2 font-semibold text-red-500 font-bold bg-white rounded-full absolute -top-12 -right-14">3</span>
+			</button>
+		</div>
+		<div class="text-gray-500 pt-40 md:pt-3">Tambahkan tanda <span class="bg-red-100 rounded px-2 py-2 font-bold text-3xl text-red-400">,</span> (koma) untuk menginput data lebih dari satu</div>
+		<div class="text-gray-500 pt-3">Untuk bilangan pecahan, tambahkan tanda <span class="bg-red-100 rounded px-2 py-2 font-bold text-3xl text-red-400">.</span> (titik) sebagai tanda koma</div>
+		<div class="w-full flex justify-end">
+			<button id="btn-excel" class="rounded-md font-bold px-2 py-2 text-green-600 bg-green-100 flex items-center hover:bg-green-200 mr-2 text-sm">
+				<svg class="mr-2" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"></path><path d="M2.859 2.877l12.57-1.795a.5.5 0 0 1 .571.495v20.846a.5.5 0 0 1-.57.495L2.858 21.123a1 1 0 0 1-.859-.99V3.867a1 1 0 0 1 .859-.99zM4 4.735v14.53l10 1.429V3.306L4 4.735zM17 19h3V5h-3V3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4v-2zm-6.8-7l2.8 4h-2.4L9 13.714 7.4 16H5l2.8-4L5 8h2.4L9 10.286 10.6 8H13l-2.8 4z"></path></g></svg>
+				 Simpan ke Excel</button>
+		</div>
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12" id="grid-result"></div>
+		<div class="" id="container"></div>
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	var acuanInput = $("#acuan-input");
+	var keberterimaanInput = $("#keberterimaan-input");
+	var dataInput = $("#data-input");
+	var acuanDom = $("#acuan-value");
+	var keberterimaanDom = $("#keberterimaan-value");
+	var rangeDom = $("#range-value");
+	var tableResultDom = $("#table-result");
+	var btnDom = $("#btn-hitung");
+	var btnExcel = $('#btn-excel');
+	var btnClear = $("#btn-clear");
+	var acuanValue = 0.0;
+	var keberterimaanValue = 0.0;
+	function get(key){
+		return localStorage.getItem(key);
+	}
+	function set(key,value){
+		localStorage.setItem(key,value)
+	}
+	if(get("acuan")){
+		if(get("acuan") != "NaN"){
+			acuanInput.val(get("acuan"))
+			acuanValue = parseFloat(get("acuan"))
+			countRange(get("acuan"),get("keberterimaan"))
+		}
+	}
+	if(get("keberterimaan")){
+		if(get("keberterimaan")!= "NaN"){
+			keberterimaanInput.val(get("keberterimaan"))
+			keberterimaanValue = parseFloat(get("keberterimaan"))
+			countRange(get("acuan"),get("keberterimaan"))
+		}
+	}
+	var rangePlus = 0.0;
+	var rangeMinus = 0.0;
+	acuanInput.on("keyup",function(e){
+		acuanValue = parseFloat(e.target.value);
+		console.log(acuanValue)
+		set("acuan",acuanValue)
+		acuanDom.text(acuanValue)
+		countRange(acuanValue,keberterimaanValue)
+	})
+	keberterimaanInput.on("keyup",function(e){
+		keberterimaanValue = parseFloat(e.target.value);
+		set("keberterimaan",keberterimaanValue)
+		keberterimaanDom.text(keberterimaanValue)
+		countRange(acuanValue,keberterimaanValue)
+	})
+	function countRange(acuan,keberterimaan){
+		if(acuan && keberterimaan){
+			rangePlus = parseFloat(acuan)+parseFloat(keberterimaan);
+			rangeMinus = parseFloat(acuan)-parseFloat(keberterimaan);
+			rangeDom.html(`<small>Range Negative = <span class="text-red-500">${rangeMinus}</span></small><small> dan Range Positive = <span class="text-red-500">${rangePlus}</span></small> `)
+			rangeDom.data("plus",rangePlus);
+			rangeDom.data("minus",rangeMinus);
+			$("#container-range").css("display",'block')
+		}
+	}
+	dataInput.on("keyup",function(e){
+		dataInput.data("dataInput",e.target.value);
+	})
+	function countHitung(input){
+		var dataValue = input;
+		var valid = false;
+		var faktorKoreksi = 0;
+		rangePlus = rangeDom.data("plus");
+		rangeMinus = rangeDom.data("minus");
+		if(dataValue <= rangePlus && dataValue >= rangeMinus){
+			valid = true;
+			faktorKoreksi = 0;
+		}
+		else{
+			faktorKoreksi = acuanValue - dataValue;
+			valid = false;
+		}
+		return {
+			dataValue:input,
+			valid:valid,
+			faktorKoreksi:faktorKoreksi
+		}
+	}
+	btnDom.on("click",function(){
+		var dataValue = dataInput.data("dataInput")
+		if(!dataValue){
+			return alert("Data tidak boleh kosong")
+		}
+		if(dataValue.includes(",")){
+			var dataValues = dataValue.split(",")
+			var values = [];
+			dataValues.forEach(function(item){
+				values.push(countHitung(parseFloat(item)))
+			});
+			var arrayForTable = values.map(function(item){
+				return [item.dataValue,item.valid?"Valid":"Invalid",item.faktorKoreksi]
+			})
+			renderTableHTML(arrayForTable);
+			var domValues = values.map(function(item){
+				return `<div class="drop-shadow-sm relative bg-${!item.valid?'red':'green'}-50 p-12 rounded-2xl p-4">
+							<div class="inherit xl:absolute  font-bold text-5xl top-4 right-4 text-${!item.valid?'red':'green'}-400">${item.dataValue}</div>
+							<div class="font-bold text-3xl top-4 right-4 text-${!item.valid?'red':'green'}-200">${!item.valid?'INVALID':'VALID'}</div>
+							<div class="font-bold text-sm top-4 right-4 text-${!item.valid?'red':'green'}-400 mt-4">Faktor Koreksi ${round(item.faktorKoreksi)}</div>
+						</div>`
+			});
+			$("#grid-result").empty().append(domValues.join(""));
+		}else{
+			var item = countHitung(dataValue);
+			var arrayForTable = [[item.dataValue,item.valid?"Valid":"Invalid",item.faktorKoreksi]];
+			renderTableHTML(arrayForTable);
+			var card = `<div class="drop-shadow-sm relative bg-${!item.valid?'red':'green'}-50 p-12 rounded-2xl p-4">
+							<div class="inherit xl:absolute  font-bold text-5xl top-4 right-4 text-${!item.valid?'red':'green'}-400">${item.dataValue}</div>
+							<div class="font-bold text-3xl top-4 right-4 text-${!item.valid?'red':'green'}-200">${!item.valid?'INVALID':'VALID'}</div>
+							<div class="font-bold text-sm top-4 right-4 text-${!item.valid?'red':'green'}-400 mt-4">Faktor Koreksi ${round(item.faktorKoreksi)}</div>
+						</div>`
+			$("#grid-result").empty().append(card);
+		}
+	})
+	btnExcel.on("click",function(){
+		exportToExcel('xlsx');
+	})
+	btnClear.on("click",function(){
+		$("#grid-result").empty();
+		dataInput.data('dataInput',null);
+		$("#data-table").remove();
+		dataInput.val(null);
+	})
+	function renderTableHTML(arrayForTable){
+		arrayForTable.unshift(['Data Input','Keterangan','Faktor Koreksi'])
+		var ws = XLSX.utils.aoa_to_sheet(arrayForTable);
+		var html_string = XLSX.utils.sheet_to_html(ws, { id: "data-table", editable: true });
+		document.getElementById("container").innerHTML = html_string;
+	}
+	function exportToExcel(type, fn, dl) {
+		var elt = document.getElementById('data-table');
+		if(!elt){
+			return alert("Data kosong")
+		};
+		var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet JS"});
+		return dl ?
+			XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
+			XLSX.writeFile(wb, fn || ('SheetJSTableExport.' + (type || 'xlsx')));
+	}
+	function round(num) {
+    	var val = (Math.round(num * 10)/10).toFixed(1);
+		if(val > 0){
+			return "+"+val;
+		}else{
+			return val;
+		}
+	}
+})
+</script>
+
+</body>
+</html>
